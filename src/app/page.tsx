@@ -52,18 +52,29 @@ export default async function LandingPage() {
           >
             Перетвори своє життя на гру
           </h1>
+          <p
+            style={{ animationDelay: "200ms" }}
+            className={cn(
+              "mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-[rgb(var(--muted))] sm:text-[17px]",
+              "opacity-0 motion-safe:animate-spring-up motion-reduce:translate-y-0 motion-reduce:opacity-100"
+            )}
+          >
+            Щоденні, щотижневі та щомісячні кроки, досвід і рівні — у зручному
+            інтерфейсі на телефоні й на комп’ютері.
+          </p>
 
           <div
-            style={{ animationDelay: "240ms" }}
+            style={{ animationDelay: "260ms" }}
             className={cn(
-              "mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-5",
+              "mt-10 flex flex-col items-stretch gap-3 sm:mt-12 sm:flex-row sm:items-center sm:justify-center sm:gap-5",
               "opacity-0 motion-safe:animate-spring-up motion-reduce:translate-y-0 motion-reduce:opacity-100"
             )}
           >
             {hasSession ? (
               <Link
                 href="/dashboard"
-                className="group inline-flex items-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
+                aria-label="Продовжити до завдань"
+                className="group inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
               >
                 Продовжити
                 <ArrowRight
@@ -75,7 +86,8 @@ export default async function LandingPage() {
               <>
                 <Link
                   href="/setup"
-                  className="group inline-flex items-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
+                  aria-label="Почати реєстрацію"
+                  className="group inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
                 >
                   Почати
                   <ArrowRight
@@ -85,7 +97,8 @@ export default async function LandingPage() {
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center rounded-full border border-black/[0.12] bg-white/70 px-10 py-4 text-[17px] font-semibold text-[rgb(var(--fg))] shadow-sm backdrop-blur transition hover:bg-white/90 dark:border-white/15 dark:bg-white/5 dark:hover:bg-white/10"
+                  aria-label="Увійти за іменем і кодом"
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-black/[0.12] bg-white/70 px-10 py-4 text-[17px] font-semibold text-[rgb(var(--fg))] shadow-sm backdrop-blur transition hover:bg-white/90 dark:border-white/15 dark:bg-white/5 dark:hover:bg-white/10"
                 >
                   Увійти
                 </Link>

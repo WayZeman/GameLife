@@ -9,7 +9,7 @@ import { DashboardClient } from "./dashboard-client";
 
 export default async function DashboardPage() {
   const userId = cookies().get(USER_COOKIE)?.value;
-  if (!userId) redirect("/setup");
+  if (!userId) redirect("/login");
 
   await rolloverAchievementsForUser(userId);
 
@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     include: { achievements: { orderBy: { id: "asc" } } },
   });
 
-  if (!user) redirect("/setup");
+  if (!user) redirect("/login");
 
   const level = levelFromTotalXp(user.totalXP);
   const progress = xpProgressInLevel(user.totalXP);

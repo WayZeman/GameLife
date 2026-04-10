@@ -159,7 +159,7 @@ export function DashboardClient({
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgb(var(--accent))]/15">
                   <Sparkles className="h-6 w-6 text-[rgb(var(--accent))]" strokeWidth={1.5} />
                 </div>
-                <h2 className="text-xl font-semibold tracking-tight">Привітання</h2>
+                <h2 className="text-xl font-semibold tracking-tight">Вітання від помічника</h2>
               </div>
               <button
                 type="button"
@@ -188,7 +188,7 @@ export function DashboardClient({
         <div className="glass rounded-[1.5rem] p-5 sm:p-8 md:p-10">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-[rgb(var(--muted))]">З поверненням</p>
+              <p className="text-sm font-medium text-[rgb(var(--muted))]">Привіт,</p>
               <h1 className="mt-1 break-words text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
                 {userName}
               </h1>
@@ -315,7 +315,8 @@ export function DashboardClient({
           {listTab === "archive" ? (
             archivedAchievements.length === 0 ? (
               <p className="rounded-2xl border border-dashed border-black/10 px-6 py-10 text-center text-[15px] text-[rgb(var(--muted))] dark:border-white/10">
-                Поки порожньо — виконай завдання з активного списку.
+                Поки що порожньо. Заверши активні завдання — вони з’являться тут після
+                перевірки.
               </p>
             ) : (
               <ul className="space-y-5">
@@ -336,7 +337,8 @@ export function DashboardClient({
             )
           ) : tabItems.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-black/10 px-6 py-10 text-center text-[15px] text-[rgb(var(--muted))] dark:border-white/10">
-              У цій категорії поки немає завдань.
+              У цьому періоді зараз немає завдань. Обери іншу вкладку або попроси
+              помічника додати нові цілі.
             </p>
           ) : (
             <ul className="space-y-5" role="tabpanel" aria-labelledby={`period-tab-${periodTab}`}>

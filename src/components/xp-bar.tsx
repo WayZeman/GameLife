@@ -20,7 +20,7 @@ export function XpBar({
       <div className="mb-2 flex flex-col gap-0.5 text-xs font-medium text-[rgb(var(--muted))] sm:flex-row sm:justify-between sm:gap-0">
         <span className="leading-snug">{label}</span>
         <span className="tabular-nums sm:text-right">
-          {current} / {next} досвіду
+          {current} / {next} XP
         </span>
       </div>
       <div className="h-3 overflow-hidden rounded-full bg-black/[0.06] dark:bg-white/[0.08]">

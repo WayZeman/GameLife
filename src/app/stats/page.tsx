@@ -9,14 +9,14 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function StatsPage() {
   const userId = cookies().get(USER_COOKIE)?.value;
-  if (!userId) redirect("/setup");
+  if (!userId) redirect("/login");
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true, name: true },
   });
 
-  if (!user) redirect("/setup");
+  if (!user) redirect("/login");
 
   const league = await getLeagueLeaderboardForUser(user.id);
 
@@ -27,7 +27,7 @@ export default async function StatsPage() {
           href="/dashboard"
           className="text-sm font-medium text-[rgb(var(--muted))] transition hover:text-[rgb(var(--fg))]"
         >
-          ← До досягнень
+          ← Назад до завдань
         </Link>
         <ThemeToggle />
       </header>
@@ -37,7 +37,7 @@ export default async function StatsPage() {
           id="stats-league-title"
           className="text-2xl font-semibold tracking-tight sm:text-3xl"
         >
-          Змагальна ліга
+          Ліга гравців
         </h1>
 
         {league ? (
@@ -50,7 +50,11 @@ export default async function StatsPage() {
               ariaLabelledBy="stats-league-title"
             />
           </div>
-        ) : null}
+        ) : (
+          <p className="mt-6 rounded-2xl border border-dashed border-black/10 px-6 py-10 text-center text-[15px] text-[rgb(var(--muted))] dark:border-white/10">
+            Не вдалося завантажити таблицю. Спробуй оновити сторінку пізніше.
+          </p>
+        )}
       </div>
     </main>
   );

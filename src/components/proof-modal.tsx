@@ -215,8 +215,11 @@ export function ProofModal({
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium">Текстовий доказ</label>
+                <label htmlFor="proof-text" className="mb-2 block text-sm font-medium">
+                  Текстовий доказ
+                </label>
                 <textarea
+                  id="proof-text"
                   value={textProof}
                   onChange={(e) => setTextProof(e.target.value)}
                   rows={4}
@@ -251,8 +254,11 @@ export function ProofModal({
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium">Фото-доказ</label>
+                <p id="proof-photo-label" className="mb-2 block text-sm font-medium">
+                  Фото-доказ
+                </p>
                 <label
+                  htmlFor="proof-image-input"
                   className={cn(
                     "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-black/10 px-4 py-8 transition",
                     "hover:border-[rgb(var(--accent))]/40 hover:bg-black/[0.02] dark:border-white/15 dark:hover:bg-white/[0.04]",
@@ -260,9 +266,11 @@ export function ProofModal({
                   )}
                 >
                   <input
+                    id="proof-image-input"
                     type="file"
                     accept="image/*"
                     className="hidden"
+                    aria-labelledby="proof-photo-label"
                     disabled={loading}
                     onChange={(e) => {
                       const f = e.target.files?.[0];
