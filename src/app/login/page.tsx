@@ -7,11 +7,16 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
+  const [name, setName] = useState("");
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit() {
+    if (!name.trim()) {
+      setError("Введи ім’я.");
+      return;
+    }
     const code = pin.replace(/\D/g, "").slice(0, 6);
     if (code.length !== 6) {
       setError("Введи 6 цифр коду.");
@@ -23,7 +28,7 @@ export default function LoginPage() {
       const r = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin: code }),
+        body: JSON.stringify({ name: name.trim(), pin: code }),
       });
       const d = (await r.json()) as { error?: string };
       if (!r.ok) {
@@ -54,7 +59,7 @@ export default function LoginPage() {
           Вхід
         </h1>
         <p className="mt-2 text-[rgb(var(--muted))]">
-          Введи свій 6-значний код, який ти створив під час реєстрації.
+          Введи ім’я та 6-значний код, які ти вказав під час реєстрації.
         </p>
 
         <div
@@ -72,12 +77,32 @@ export default function LoginPage() {
             </p>
           )}
           <label className="block text-sm font-medium text-[rgb(var(--fg))]">
-            Код доступу
+            Ім’я
+          </label>
+          <input
+            type="text"
+            autoComplete="username"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void submit();
+            }}
+            disabled={loading}
+            placeholder="Як у профілі"
+            className={cn(
+              "mt-2 w-full rounded-2xl border border-black/[0.08] bg-white/80 px-4 py-3 text-base",
+              "focus:border-[rgb(var(--accent))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
+              "dark:border-white/10 dark:bg-black/20",
+              "disabled:opacity-50"
+            )}
+          />
+          <label className="mt-4 block text-sm font-medium text-[rgb(var(--fg))]">
+            Код доступу (6 цифр)
           </label>
           <input
             type="password"
             inputMode="numeric"
-            autoComplete="one-time-code"
+            autoComplete="current-password"
             maxLength={6}
             value={pin}
             onChange={(e) =>
@@ -98,7 +123,11 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => void submit()}
-            disabled={loading || pin.replace(/\D/g, "").length !== 6}
+            disabled={
+              loading ||
+              !name.trim() ||
+              pin.replace(/\D/g, "").length !== 6
+            }
             className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[rgb(var(--accent))] py-3.5 text-[15px] font-semibold text-white shadow-md transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {loading && <Loader2 className="h-5 w-5 animate-spin" />}

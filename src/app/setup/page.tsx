@@ -290,8 +290,8 @@ export default function SetupPage() {
                   Створи код доступу з 6 цифр
                 </p>
                 <p className="text-sm text-[rgb(var(--muted))]">
-                  Запам&apos;ятай його: за цим кодом можна буде увійти з головної
-                  сторінки («Увійти»).
+                  Запам&apos;ятай код: на головній у «Увійти» вкажеш ім’я та цей
+                  код.
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <input

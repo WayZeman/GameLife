@@ -3,10 +3,19 @@ import { prisma } from "@/lib/prisma";
 import { USER_COOKIE } from "@/lib/constants";
 import { hashLoginPin, isValidLoginPin } from "@/lib/auth-pin";
 
+function normalizeName(s: string): string {
+  return s.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { pin?: string };
+    const body = (await request.json()) as { name?: string; pin?: string };
+    const nameRaw = String(body.name ?? "");
     const pin = body.pin;
+
+    if (!normalizeName(nameRaw)) {
+      return NextResponse.json({ error: "Введи ім’я" }, { status: 400 });
+    }
 
     if (!isValidLoginPin(pin)) {
       return NextResponse.json(
@@ -25,12 +34,15 @@ export async function POST(request: Request) {
 
     const user = await prisma.user.findUnique({
       where: { loginPinHash },
-      select: { id: true },
+      select: { id: true, name: true },
     });
 
-    if (!user) {
+    if (!user || normalizeName(user.name) !== normalizeName(nameRaw)) {
       return NextResponse.json(
-        { error: "Невірний код. Перевір цифри або зареєструйся через «Почати»." },
+        {
+          error:
+            "Невірне ім’я або код. Перевір дані або зареєструйся через «Почати».",
+        },
         { status: 401 }
       );
     }
