@@ -1,0 +1,64 @@
+// Local dev: SQLite (`DATABASE_URL="file:./dev.db"`). For Neon PostgreSQL later: set
+// `provider = "postgresql"`, `url = env("DATABASE_URL")`, and `directUrl = env("DIRECT_URL")` if needed.
+// Enum-like fields use String for SQLite compatibility; Postgres can later use native enums if desired.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  age        Int
+  // student | worker | military | creative | business
+  category   String
+  interests  String
+  mainGoal   String
+  /// Текст привітання від ШІ після генерації досягнень
+  welcomeMessage String?
+  totalXP    Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  achievements     Achievement[]
+  verificationLogs VerificationLog[]
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String
+  // health | learning | discipline | finance | social
+  category    String
+  // easy | medium | hard
+  difficulty  String
+  // day | week | month — щоденні / щотижневі / щомісячні
+  period      String   @default("month")
+  /// Ключ поточного «вікна» (день YYYY-MM-DD, тиждень YYYY-MM-DD понеділка, місяць YYYY-MM) для скидання при оновленні періоду
+  periodWindowKey String @default("")
+  xp          Int
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  /// Виконані завдання в архіві (не в активному списку)
+  archived    Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  verificationLogs VerificationLog[]
+}
+
+model VerificationLog {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  result        Boolean
+  confidence    Float
+  createdAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+}

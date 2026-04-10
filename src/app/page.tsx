@@ -1,0 +1,74 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
+
+export default function LandingPage() {
+  return (
+    <main className="relative flex min-h-dvh flex-col overflow-hidden">
+      <div
+        className="pointer-events-none absolute -left-1/4 top-1/4 h-[min(420px,55vw)] w-[min(420px,55vw)] rounded-full bg-[rgb(var(--accent))]/20 blur-3xl motion-safe:animate-orb-drift"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -right-1/4 bottom-1/4 h-[min(380px,50vw)] w-[min(380px,50vw)] rounded-full bg-violet-400/15 blur-3xl motion-safe:animate-orb-drift motion-safe:[animation-delay:-7s]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/3 h-40 w-40 -translate-x-1/2 rounded-full bg-sky-400/10 blur-2xl motion-safe:animate-pulse-soft"
+        aria-hidden
+      />
+
+      <header
+        className={cn(
+          "relative z-10 flex items-center justify-end px-4 py-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-10",
+          "opacity-0 motion-safe:animate-fade-in motion-reduce:opacity-100"
+        )}
+      >
+        <ThemeToggle />
+      </header>
+
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-[max(6rem,env(safe-area-inset-bottom))] pt-6 text-center sm:px-10">
+        <div className="max-w-2xl">
+          <p
+            style={{ animationDelay: "60ms" }}
+            className={cn(
+              "mb-4 text-sm font-medium uppercase tracking-[0.2em] text-[rgb(var(--muted))]",
+              "opacity-0 motion-safe:animate-spring-up motion-reduce:translate-y-0 motion-reduce:opacity-100"
+            )}
+          >
+            Гра життєвих досягнень
+          </p>
+          <h1
+            style={{ animationDelay: "140ms" }}
+            className={cn(
+              "text-[clamp(1.75rem,5vw+0.75rem,3.75rem)] font-semibold leading-[1.12] tracking-tight sm:text-5xl md:text-6xl md:leading-[1.1]",
+              "opacity-0 motion-safe:animate-spring-up motion-reduce:translate-y-0 motion-reduce:opacity-100"
+            )}
+          >
+            Перетвори своє життя на гру
+          </h1>
+
+          <div
+            style={{ animationDelay: "240ms" }}
+            className={cn(
+              "mt-12",
+              "opacity-0 motion-safe:animate-spring-up motion-reduce:translate-y-0 motion-reduce:opacity-100"
+            )}
+          >
+            <Link
+              href="/setup"
+              className="group inline-flex items-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
+            >
+              Почати
+              <ArrowRight
+                className="h-5 w-5 transition duration-300 group-hover:translate-x-1"
+                strokeWidth={2}
+              />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
