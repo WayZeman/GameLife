@@ -5,8 +5,9 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: file:./dev.db
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"

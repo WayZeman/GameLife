@@ -7,9 +7,7 @@
       "command": "npm run dev",
       "options": {
         "cwd": "${workspaceFolder}",
-        "env": {
-          "DATABASE_URL": "file:./dev.db"
-        }
+        "envFile": "${workspaceFolder}/.env"
       },
       "group": {
         "kind": "build",
@@ -28,9 +26,7 @@
       "command": "npx prisma migrate deploy",
       "options": {
         "cwd": "${workspaceFolder}",
-        "env": {
-          "DATABASE_URL": "file:./dev.db"
-        }
+        "envFile": "${workspaceFolder}/.env"
       },
       "problemMatcher": []
     },

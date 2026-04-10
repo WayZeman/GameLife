@@ -7,7 +7,7 @@
 Щоб у **вбудованому терміналі Cursor** були `node` / `npm` без встановлення Node на Mac:
 
 1. Встанови **Docker Desktop** (або Colima) і в Cursor — розширення **Dev Containers** (запропонує `.vscode/extensions.json`).
-2. `cp .env.example .env` і додай `OPENAI_API_KEY` у `.env`.
+2. `cp .env.example .env` і додай у `.env` рядки **Neon** (`DATABASE_URL`, `DIRECT_URL`) та `OPENAI_API_KEY`.
 3. Command Palette (**⌘⇧P**): **Dev Containers: Reopen in Container** — дочекайся збірки образу та `postCreateCommand`.
 4. Запуск сервера:
    - **Terminal → Run Task…** (**⌘⇧B** або **Tasks: Run Task**) → **Next.js: dev server**,  
@@ -19,12 +19,12 @@
 
 Потрібні **Docker Desktop** (або **Colima** / **Podman**) — Node всередині контейнера, на Mac не обов’язково ставити Node.
 
-1. Створи `.env` з ключем OpenAI (Compose підхопить змінні з файлу `.env` у корені проєкту):
+1. Створи `.env` з **Neon** (`DATABASE_URL`, `DIRECT_URL`) та `OPENAI_API_KEY` — Compose підхопить `.env` у корені проєкту:
 
 ```bash
 cd /Users/macbook/Desktop/GameLife
 cp .env.example .env
-# Відредагуй .env і додай: OPENAI_API_KEY=sk-...
+# Відредагуй .env: рядки з Neon з дашборду + OPENAI_API_KEY=sk-...
 ```
 
 2. Запуск:
@@ -45,7 +45,7 @@ docker compose up --build
 cd /Users/macbook/Desktop/GameLife
 nvm use
 cp .env.example .env
-# додай у .env: OPENAI_API_KEY=sk-...
+# додай у .env: DATABASE_URL, DIRECT_URL (Neon), OPENAI_API_KEY=sk-...
 npm install
 npx prisma migrate dev
 npm run dev
@@ -59,4 +59,4 @@ npm run dev
 
 ## База даних
 
-Локально використовується **SQLite** (`prisma/dev.db`). Для переходу на Neon PostgreSQL див. коментарі в `prisma/schema.prisma` та `.env.example`.
+Проєкт орієнтований на **Neon (PostgreSQL)**. У [Neon Console](https://console.neon.tech) створи проєкт, скопіюй **Pooled** connection string у `DATABASE_URL` і **Direct** у `DIRECT_URL` (обидва з `sslmode=require`, якщо Neon їх додає). Після змін у `.env`: `npx prisma migrate deploy` (або `migrate dev` у розробці). Локальний SQLite більше не використовується — старий `prisma/dev.db` можна видалити.

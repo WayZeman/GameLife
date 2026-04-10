@@ -1,13 +1,13 @@
-// Local dev: SQLite (`DATABASE_URL="file:./dev.db"`). For Neon PostgreSQL later: set
-// `provider = "postgresql"`, `url = env("DATABASE_URL")`, and `directUrl = env("DIRECT_URL")` if needed.
-// Enum-like fields use String for SQLite compatibility; Postgres can later use native enums if desired.
+// Neon / PostgreSQL: DATABASE_URL = pooled (PgBouncer). DIRECT_URL = direct (migrations).
+// Local SQLite: set provider to sqlite and use DATABASE_URL="file:./dev.db" (no DIRECT_URL).
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
