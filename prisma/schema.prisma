@@ -1,5 +1,4 @@
-// Neon / PostgreSQL: DATABASE_URL = pooled (PgBouncer). DIRECT_URL = direct (migrations).
-// Local SQLite: set provider to sqlite and use DATABASE_URL="file:./dev.db" (no DIRECT_URL).
+// База — Neon PostgreSQL. DATABASE_URL = pooled, DIRECT_URL = direct (міграції Prisma).
 generator client {
   provider = "prisma-client-js"
 }

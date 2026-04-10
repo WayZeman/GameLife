@@ -5,7 +5,7 @@
   "scripts": {
     "predev": "prisma generate && prisma migrate deploy",
     "dev": "next dev -H 0.0.0.0",
-    "prebuild": "prisma generate",
+    "prebuild": "prisma generate && prisma migrate deploy",
     "docker:up": "docker compose up --build",
     "build": "next build",
     "start": "next start",
