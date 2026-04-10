@@ -59,4 +59,4 @@ npm run dev
 
 ## База даних
 
-Проєкт орієнтований на **Neon (PostgreSQL)**. У [Neon Console](https://console.neon.tech) створи проєкт, скопіюй **Pooled** connection string у `DATABASE_URL` і **Direct** у `DIRECT_URL` (обидва з `sslmode=require`, якщо Neon їх додає). Після змін у `.env`: `npx prisma migrate deploy` (або `migrate dev` у розробці). Локальний SQLite більше не використовується — старий `prisma/dev.db` можна видалити.
+Проєкт орієнтований на **Neon (PostgreSQL)**. У [Neon Console](https://console.neon.tech) створи проєкт, скопіюй **Pooled** connection string у `DATABASE_URL` і **Direct** у `DIRECT_URL` (обидва з `sslmode=require`, якщо Neon їх додає). Додай довгий випадковий **`AUTH_PIN_PEPPER`** (той самий у `.env` і на **Vercel**) — ним хешується 6-значний код входу. Після змін у `.env`: `npx prisma migrate deploy` (або `migrate dev` у розробці). У **розробці** без `AUTH_PIN_PEPPER` використовується небезпечний дефолт; у продакшені змінна обовʼязкова.

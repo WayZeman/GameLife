@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { ArrowRight } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { USER_COOKIE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const hasSession = Boolean(cookies().get(USER_COOKIE)?.value);
+
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden">
       <div
@@ -52,20 +56,41 @@ export default function LandingPage() {
           <div
             style={{ animationDelay: "240ms" }}
             className={cn(
-              "mt-12",
+              "mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-5",
               "opacity-0 motion-safe:animate-spring-up motion-reduce:translate-y-0 motion-reduce:opacity-100"
             )}
           >
-            <Link
-              href="/setup"
-              className="group inline-flex items-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
-            >
-              Почати
-              <ArrowRight
-                className="h-5 w-5 transition duration-300 group-hover:translate-x-1"
-                strokeWidth={2}
-              />
-            </Link>
+            {hasSession ? (
+              <Link
+                href="/dashboard"
+                className="group inline-flex items-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
+              >
+                Продовжити
+                <ArrowRight
+                  className="h-5 w-5 transition duration-300 group-hover:translate-x-1"
+                  strokeWidth={2}
+                />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/setup"
+                  className="group inline-flex items-center gap-2 rounded-full bg-[rgb(var(--accent))] px-10 py-4 text-[17px] font-semibold text-white shadow-xl shadow-blue-500/20 transition duration-300 hover:scale-[1.03] hover:shadow-blue-500/35 active:scale-[0.98] motion-safe:duration-300"
+                >
+                  Почати
+                  <ArrowRight
+                    className="h-5 w-5 transition duration-300 group-hover:translate-x-1"
+                    strokeWidth={2}
+                  />
+                </Link>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center rounded-full border border-black/[0.12] bg-white/70 px-10 py-4 text-[17px] font-semibold text-[rgb(var(--fg))] shadow-sm backdrop-blur transition hover:bg-white/90 dark:border-white/15 dark:bg-white/5 dark:hover:bg-white/10"
+                >
+                  Увійти
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

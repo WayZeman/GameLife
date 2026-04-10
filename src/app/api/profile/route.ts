@@ -4,6 +4,7 @@ import { generateAchievementsAndWelcome } from "@/lib/openai";
 import type { Period } from "@/lib/openai";
 import { currentWindowKey } from "@/lib/period-windows";
 import { USER_COOKIE } from "@/lib/constants";
+import { hashLoginPin, isValidLoginPin } from "@/lib/auth-pin";
 import { parseUserCategory } from "@/lib/profile-fields";
 
 function parseHorizons(raw: unknown): Period[] {
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
       mainGoal?: string;
       horizons?: string[];
       conversationSummary?: string;
+      pin?: string;
     };
 
     const name = String(body.name ?? "").trim();
@@ -35,9 +37,36 @@ export async function POST(request: Request) {
     const mainGoal = String(body.mainGoal ?? "").trim();
     const horizons = parseHorizons(body.horizons);
     const conversationSummary = String(body.conversationSummary ?? "").trim();
+    const pinRaw = body.pin;
 
     if (!name || !Number.isFinite(age) || age < 1 || age > 120 || !category) {
       return NextResponse.json({ error: "Некоректні дані профілю" }, { status: 400 });
+    }
+
+    if (!isValidLoginPin(pinRaw)) {
+      return NextResponse.json(
+        { error: "Вкажи код доступу з 6 цифр" },
+        { status: 400 }
+      );
+    }
+
+    let loginPinHash: string;
+    try {
+      loginPinHash = hashLoginPin(pinRaw);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Некоректний код";
+      return NextResponse.json({ error: msg }, { status: 400 });
+    }
+
+    const pinTaken = await prisma.user.findUnique({
+      where: { loginPinHash },
+      select: { id: true },
+    });
+    if (pinTaken) {
+      return NextResponse.json(
+        { error: "Цей код уже зайнятий. Обери інший 6-значний код." },
+        { status: 409 }
+      );
     }
 
     const { achievements: generated, welcomeMessage } =
@@ -59,6 +88,7 @@ export async function POST(request: Request) {
         interests,
         mainGoal,
         welcomeMessage,
+        loginPinHash,
         totalXP: 0,
         achievements: {
           create: generated.map((a) => ({
@@ -88,6 +118,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 400,
+      secure: process.env.NODE_ENV === "production",
     });
     return res;
   } catch (e) {

@@ -20,6 +20,8 @@ model User {
   /// Текст привітання від ШІ після генерації досягнень
   welcomeMessage String?
   totalXP    Int      @default(0)
+  /// SHA-256 (pepper + PIN) для входу 6-значним кодом; унікальний
+  loginPinHash String? @unique
   createdAt  DateTime @default(now())
 
   achievements     Achievement[]

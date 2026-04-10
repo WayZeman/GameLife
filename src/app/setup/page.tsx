@@ -35,6 +35,12 @@ export default function SetupPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
+  const [pinPhase, setPinPhase] = useState(false);
+  const [pendingProfile, setPendingProfile] =
+    useState<OnboardingProfilePayload | null>(null);
+  const [pendingMessages, setPendingMessages] = useState<Msg[]>([]);
+  const [pin, setPin] = useState("");
+  const [pinConfirm, setPinConfirm] = useState("");
   const errorBannerRef = useRef<HTMLParagraphElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -84,7 +90,8 @@ export default function SetupPage() {
 
   async function finalize(
     profile: OnboardingProfilePayload,
-    allMessages: Msg[]
+    allMessages: Msg[],
+    accessPin: string
   ) {
     const conversationSummary = allMessages
       .map((m) =>
@@ -106,6 +113,7 @@ export default function SetupPage() {
         mainGoal: profile.mainGoal,
         horizons: profile.horizons,
         conversationSummary,
+        pin: accessPin,
       }),
     });
     const rawText = await res.text();
@@ -128,9 +136,33 @@ export default function SetupPage() {
     window.location.assign("/dashboard");
   }
 
+  async function submitRegistrationPin() {
+    if (!pendingProfile) return;
+    const p = pin.replace(/\D/g, "").slice(0, 6);
+    const c = pinConfirm.replace(/\D/g, "").slice(0, 6);
+    if (p.length !== 6) {
+      setError("Введи код з 6 цифр.");
+      return;
+    }
+    if (p !== c) {
+      setError("Коди не збігаються. Введи однаковий код двічі.");
+      return;
+    }
+    setError(null);
+    setGenerating(true);
+    try {
+      await finalize(pendingProfile, pendingMessages, p);
+    } catch (err) {
+      setGenerating(false);
+      setError(
+        err instanceof Error ? err.message : "Не вдалося зберегти профіль"
+      );
+    }
+  }
+
   async function send() {
     const text = input.trim();
-    if (!text || loading || generating || bootLoading) return;
+    if (!text || loading || generating || bootLoading || pinPhase) return;
 
     setError(null);
     const userMsg: Msg = { role: "user", content: text };
@@ -161,16 +193,10 @@ export default function SetupPage() {
       setMessages(afterChat);
 
       if (d.phase === "ready" && d.profile) {
-        setGenerating(true);
         setLoading(false);
-        try {
-          await finalize(d.profile, afterChat);
-        } catch (err) {
-          setGenerating(false);
-          setError(
-            err instanceof Error ? err.message : "Не вдалося зберегти профіль"
-          );
-        }
+        setPendingProfile(d.profile);
+        setPendingMessages(afterChat);
+        setPinPhase(true);
         return;
       }
     } catch (e) {
@@ -199,7 +225,9 @@ export default function SetupPage() {
         <p className="mt-2 text-[rgb(var(--muted))]">
           Поговори з асистентом крок за кроком: ім&apos;я, вік, інтереси й те, до
           чого прагнеш — так підберемо досягнення під тебе (щоденні, щотижневі
-          чи щомісячні).
+          чи щомісячні). Наприкінці ти створиш{" "}
+          <strong className="text-[rgb(var(--fg))]">6-значний код</strong> для
+          входу пізніше.
         </p>
 
         <div
@@ -256,42 +284,104 @@ export default function SetupPage() {
           </div>
 
           <div className="border-t border-black/[0.06] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-white/[0.08] sm:p-4 sm:pb-4">
-            <div className="flex gap-2">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    void send();
+            {pinPhase ? (
+              <div className="space-y-4">
+                <p className="text-sm font-medium text-[rgb(var(--fg))]">
+                  Створи код доступу з 6 цифр
+                </p>
+                <p className="text-sm text-[rgb(var(--muted))]">
+                  Запам&apos;ятай його: за цим кодом можна буде увійти з головної
+                  сторінки («Увійти»).
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="new-password"
+                    maxLength={6}
+                    value={pin}
+                    onChange={(e) =>
+                      setPin(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
+                    placeholder="••••••"
+                    disabled={generating}
+                    className={cn(
+                      "rounded-2xl border border-black/[0.08] bg-white/80 px-4 py-3 text-center font-mono text-lg tracking-[0.35em] sm:flex-1",
+                      "focus:border-[rgb(var(--accent))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
+                      "dark:border-white/10 dark:bg-black/20",
+                      "disabled:opacity-50"
+                    )}
+                  />
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="new-password"
+                    maxLength={6}
+                    value={pinConfirm}
+                    onChange={(e) =>
+                      setPinConfirm(
+                        e.target.value.replace(/\D/g, "").slice(0, 6)
+                      )
+                    }
+                    placeholder="Повтори код"
+                    disabled={generating}
+                    className={cn(
+                      "rounded-2xl border border-black/[0.08] bg-white/80 px-4 py-3 text-center font-mono text-lg tracking-[0.35em] sm:flex-1",
+                      "focus:border-[rgb(var(--accent))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
+                      "dark:border-white/10 dark:bg-black/20",
+                      "disabled:opacity-50"
+                    )}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void submitRegistrationPin()}
+                  disabled={
+                    generating || pin.length !== 6 || pinConfirm.length !== 6
                   }
-                }}
-                disabled={loading || generating || bootLoading || !started}
-                rows={2}
-                placeholder="Напиши відповідь…"
-                className={cn(
-                  "min-h-[52px] flex-1 resize-none rounded-2xl border border-black/[0.08] bg-white/80 px-4 py-3 text-base sm:text-[15px]",
-                  "placeholder:text-black/35 focus:border-[rgb(var(--accent))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
-                  "dark:border-white/10 dark:bg-black/20 dark:placeholder:text-white/35",
-                  "disabled:opacity-50"
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => void send()}
-                disabled={
-                  loading ||
-                  generating ||
-                  bootLoading ||
-                  !started ||
-                  !input.trim()
-                }
-                className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl bg-[rgb(var(--accent))] text-white shadow-md transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Надіслати"
-              >
-                <Send className="h-5 w-5" strokeWidth={2} />
-              </button>
-            </div>
+                  className="w-full rounded-2xl bg-[rgb(var(--accent))] py-3.5 text-[15px] font-semibold text-white shadow-md transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Завершити реєстрацію
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      void send();
+                    }
+                  }}
+                  disabled={loading || generating || bootLoading || !started}
+                  rows={2}
+                  placeholder="Напиши відповідь…"
+                  className={cn(
+                    "min-h-[52px] flex-1 resize-none rounded-2xl border border-black/[0.08] bg-white/80 px-4 py-3 text-base sm:text-[15px]",
+                    "placeholder:text-black/35 focus:border-[rgb(var(--accent))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
+                    "dark:border-white/10 dark:bg-black/20 dark:placeholder:text-white/35",
+                    "disabled:opacity-50"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => void send()}
+                  disabled={
+                    loading ||
+                    generating ||
+                    bootLoading ||
+                    !started ||
+                    !input.trim()
+                  }
+                  className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl bg-[rgb(var(--accent))] text-white shadow-md transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40"
+                  aria-label="Надіслати"
+                >
+                  <Send className="h-5 w-5" strokeWidth={2} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
